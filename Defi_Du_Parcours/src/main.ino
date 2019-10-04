@@ -10,10 +10,6 @@ Date: Derniere date de modification
 
 
 
-void maFonction(){
-  
-}
-
 
 
 void setup(){
