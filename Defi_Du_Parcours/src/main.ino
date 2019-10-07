@@ -23,84 +23,91 @@ void setup()
   //delay(1000);
   //Tourner(-360);
   //Serial.begin(9600);
- 
-
+/*
+  Tourner(180);
+  delay(1000);
+  Tourner(180);
+  delay(1000);
+  Tourner(180);
+  delay(1000);
+  Tourner(180);
+  delay(1000);
+  */
   Avancer(120);
-  delay(100);
+  delay(200);
 
   Tourner(-90);
-  delay(100);
+  delay(200);
 
   Avancer(71);
-  delay(100);
+  delay(200);
 
-  Tourner(90);
-  delay(100);
+  Tourner(94);
+  delay(200);
 
-  Avancer(78);
-  delay(100);
+  Avancer(75);
+  delay(200);
 
-  Tourner(44); //45
-  delay(100);
+  Tourner(45); //45
+  delay(200);
 
   Avancer(180);
-  delay(100);
+  delay(200);
   
-  Tourner(-89);
-  delay(100);
+  Tourner(-90);
+  delay(200);
 
-  Avancer(50);
-  delay(100);
+  Avancer(40);
+  delay(200);
 
-  Tourner(46);
-  delay(100);
+  Tourner(45);
+  delay(200);
 
-  Avancer(100); 
+  Avancer(100);
+  delay(200);
+
   //UTURN DAWG
   UTurn();
+  delay(200);
   //UTURN DAWG
+
  Avancer(100); 
-  delay(100);
+  delay(200);
 
   Tourner(-45);
-  delay(100);
+  delay(200);
 
-  Avancer(50);
-  delay(100);
+  Avancer(40);
+  delay(200);
 
   Tourner(90);
-  delay(100);
+  delay(200);
 
   Avancer(180);
-  delay(100);
+  delay(200);
 
-  Tourner(-44);
-  delay(100);
+  Tourner(-45);
+  delay(200);
 
-  Avancer(78);
-  delay(100);
+  Avancer(75);
+  delay(200);
 
   Tourner(-90);
-  delay(100);
+  delay(200);
 
   Avancer(71);
-  delay(100);
+  delay(200);
 
   Tourner(90);
-  delay(100);
+  delay(200);
 
   Avancer(120);
-  delay(100);
+  delay(200);
 
-  Avancer(10); 
   UTurn();
-  delay(10);
   UTurn();
-  delay(10);
   UTurn();
-  delay(10);
   UTurn();
-  delay(10);
 
 }
 
@@ -115,7 +122,7 @@ void loop()
 
 void Avancer(float distance)
 {
-    float vM=0.4;
+    float vM=0.2;
     float vE=vM;
     int compteur = 0; //nb de pulse lu depuis de le debut
     int32_t nbPulse = 0, nbPulseM = 0, nbPulseE = 0; //M=maitre, E=esclave
@@ -130,11 +137,23 @@ void Avancer(float distance)
     ENCODER_ReadReset(0);
     ENCODER_ReadReset(1);
 
+    
+
     //Initialiser la vitesse des deux moteurs à 50%
     MOTOR_SetSpeed(0, vM);
     MOTOR_SetSpeed(1, vE);
 
+    while (vM <= 0.5)
+    {
+      vM += 0.01;
+      vE = vM;
+      MOTOR_SetSpeed(0, vM);
+      MOTOR_SetSpeed(1, vE);
+      delay(20);
+    }
+
     //Permet de réduire la vitesse juste avant la fin pour éviter un arrêt brusque
+    
     while (compteur < (nbPulse-3200))
     {
         delay(100);
@@ -155,7 +174,7 @@ void Avancer(float distance)
     }
 
     //Réduit la vitesse des moteurs
-    vM=0.2;
+    vM=0.3;
     vE=vM;
     MOTOR_SetSpeed(0, vM);
     MOTOR_SetSpeed(1, vE);
@@ -193,8 +212,8 @@ void Tourner(int32_t angle){
   int32_t nbPulse=0,compteurPulse=0; // 
   float circonference = 23.938936; //Diamètre des roues en cm * Pi
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
-  float arcUnitaire =  PI * 18.2 * 2 / 360;//arc pour un degré de rotation
-  float vitesse = 0.3; // vitesse des moteurs
+  float arcUnitaire =  PI * 18.7 * 2 / 360;//arc pour un degré de rotation
+  float vitesse = 0.25; // vitesse des moteurs
 
 
   ENCODER_ReadReset(0);
