@@ -1,4 +1,5 @@
 /*
+30A
 Projet: Le nom du script
 Equipe: Votre numero d'equipe
 Auteurs: Les membres auteurs du script
@@ -24,8 +25,12 @@ void setup()
   //Tourner(-360);
   //Serial.begin(9600);
  
+  /*Tourner(-90);
+  delay(500);
+  Tourner(90);*/
 
-  /*Avancer(116);
+  //UTurn();
+  Avancer(116);
   delay(100);
 
   Tourner(-90);
@@ -43,22 +48,25 @@ void setup()
   Tourner(45);
   delay(100);
 
-  Avancer(180);
+  Avancer(172);
   delay(100);
   
   Tourner(-90);
   delay(100);
 
-  Avancer(50);
+  Avancer(53);
   delay(100);
 
   Tourner(45);
   delay(100);
 
-  Avancer(90); 
-  UTurn();
+  Avancer(108); 
+  delay(100);
 
-  Avancer(90); 
+  UTurn();
+  delay(100);
+ 
+  Avancer(110); 
   delay(100);
 
   Tourner(-45);
@@ -67,10 +75,10 @@ void setup()
   Avancer(50);
   delay(100);
 
-  Tourner(90);
+  Tourner(91);
   delay(100);
 
-  Avancer(180);
+  Avancer(172);
   delay(100);
 
   Tourner(-45);
@@ -82,7 +90,7 @@ void setup()
   Tourner(-90);
   delay(100);
 
-  Avancer(71);
+  Avancer(75);
   delay(100);
 
   Tourner(90);
@@ -91,9 +99,7 @@ void setup()
   Avancer(116);
   delay(100);
 
-  Tourner(1080);*/
-
-  Avancer(200);
+  UTurn();UTurn();UTurn();UTurn();UTurn();
 }
 
 
@@ -107,7 +113,7 @@ void loop()
 
 void Avancer(float distance)
 {
-    float vM=0.4;
+    float vM=0.2;
     float vE=vM;
     int compteur = 0; //nb de pulse lu depuis de le debut
     int32_t nbPulse = 0, nbPulseM = 0, nbPulseE = 0; //M=maitre, E=esclave
@@ -125,6 +131,14 @@ void Avancer(float distance)
     //Initialiser la vitesse des deux moteurs à 50%
     MOTOR_SetSpeed(0, vM);
     MOTOR_SetSpeed(1, vE);
+
+    while(vM <= 0.5){
+      vM += 0.01;
+      vE = vM;
+      MOTOR_SetSpeed(0, vM);
+      MOTOR_SetSpeed(1, vE);
+      delay(10);
+    }
 
     //Permet de réduire la vitesse juste avant la fin pour éviter un arrêt brusque
     while (compteur < (nbPulse-3200))
@@ -147,7 +161,7 @@ void Avancer(float distance)
     }
 
     //Réduit la vitesse des moteurs
-    vM=0.2;
+    vM=0.25;
     vE=vM;
     MOTOR_SetSpeed(0, vM);
     MOTOR_SetSpeed(1, vE);
@@ -240,12 +254,14 @@ void Avancer(float distance)
     MOTOR_SetSpeed(0, 0);
     MOTOR_SetSpeed(1, 0);
 }*/
+
+
 void Tourner(int32_t angle){
   int32_t nbPulse=0,compteurPulse=0; // 
   float circonference = 23.938936; //Diamètre des roues en cm * Pi
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
-  float arcUnitaire =  PI * 18.7 * 2 / 360;//arc pour un degré de rotation
-  float vitesse = 0.5; // vitesse des moteurs
+  float arcUnitaire =  PI * 18.6 * 2 / 360;//arc pour un degré de rotation
+  float vitesse = 0.3; // vitesse des moteurs
 
 
   ENCODER_ReadReset(0);
@@ -259,7 +275,9 @@ void Tourner(int32_t angle){
     MOTOR_SetSpeed(0,vitesse);
 
     while(compteurPulse < (nbPulse)){//+ 50 en test pcq tourne pas assez
+
       delay(50);
+
       compteurPulse = ENCODER_Read(0);
     }
 
@@ -269,13 +287,17 @@ void Tourner(int32_t angle){
      MOTOR_SetSpeed(1,vitesse);
 
     while(compteurPulse < (nbPulse*(-1))){
+
       delay(50);
+
       compteurPulse = ENCODER_Read(1);
     }
 
     MOTOR_SetSpeed(1,0);
   }
 }
+
+
 
 void UTurn(){
   float vM=0.3;
@@ -286,7 +308,7 @@ void UTurn(){
   int erreurL = 0, erreurT=0; //erreurL=erreur local, erreurT=erreur total
   float KP=0.0002 , KI=0.00002;//coefficiant pour erreurL et erreurT<
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
-  float arcUnitaire =  PI * 19.1 * 2 / 360;//arc pour un degré de rotation
+  float arcUnitaire =  PI * 19.7 * 2 / 360;//arc pour un degré de rotation
   //2019-10-02 avant changement: KP=0.0001, KI=0.00002
   //Trouver le nombre de pulse nécessaire pour une distance donnée en cm
   arc = arcUnitaire*90;
