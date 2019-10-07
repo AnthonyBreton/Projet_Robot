@@ -19,22 +19,7 @@ float PID(int32_t nbPulseMaitre, int32_t nbPulseEsclave, float vEsclave, int nbI
 void setup() 
 {
   BoardInit();
- 
-<<<<<<< HEAD
-  /*Tourner(-90);
-  delay(500);
-  Tourner(90);*/
 
-  //UTurn();
-=======
- /*Tourner(90);
-  delay(1000);
- Tourner(-90);
-*/
-
- // Serial.begin(9600);
- 
->>>>>>> Robot30A
   Avancer(116);
   delay(100);
 
@@ -104,22 +89,15 @@ void setup()
   Avancer(116);
   delay(100);
 
-<<<<<<< HEAD
   UTurn();UTurn();UTurn();UTurn();UTurn();
-=======
-  Tourner(1080);
-
- 
->>>>>>> Robot30A
 }
 
 
 
 void loop() 
 {
- // if (ROBUS_IsBumper(3)==true)
-  //Avancer(200);
- 
+  
+  
 }
 
 
@@ -144,7 +122,6 @@ void Avancer(float distance)
     MOTOR_SetSpeed(0, vM);
     MOTOR_SetSpeed(1, vE);
 
-<<<<<<< HEAD
     while(vM <= 0.5){
       vM += 0.01;
       vE = vM;
@@ -153,13 +130,9 @@ void Avancer(float distance)
       delay(10);
     }
 
-=======
-    
->>>>>>> Robot30A
     //Permet de réduire la vitesse juste avant la fin pour éviter un arrêt brusque
     while (compteur < (nbPulse-3200))
     {
-      
         delay(100);
         nbPulseM = ENCODER_Read(0);
         nbPulseE = ENCODER_Read(1);
@@ -277,13 +250,8 @@ void Tourner(int32_t angle){
   int32_t nbPulse=0,compteurPulse=0; // 
   float circonference = 23.938936; //Diamètre des roues en cm * Pi
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
-<<<<<<< HEAD
   float arcUnitaire =  PI * 18.6 * 2 / 360;//arc pour un degré de rotation
   float vitesse = 0.3; // vitesse des moteurs
-=======
-  float arcUnitaire =  PI * 18.7 * 2 / 360;//arc pour un degré de rotation /2019-10-07:valeur de la distance des roues est 18.7
-  float vitesse = 0.5; // vitesse des moteurs
->>>>>>> Robot30A
 
 
   ENCODER_ReadReset(0);
@@ -296,12 +264,8 @@ void Tourner(int32_t angle){
   if (nbPulse > 0){
     MOTOR_SetSpeed(0,vitesse);
 
-<<<<<<< HEAD
     while(compteurPulse < (nbPulse)){//+ 50 en test pcq tourne pas assez
 
-=======
-    while(compteurPulse < (nbPulse)){
->>>>>>> Robot30A
       delay(50);
 
       compteurPulse = ENCODER_Read(0);
@@ -366,40 +330,4 @@ void UTurn(){
       MOTOR_SetSpeed(1,0);
     }
   }
-
-
-  /*int32_t nbPulse=0,compteurPulseG= 0, compteurPulseD=0; // 
-  float circonference = 23.938936; //Diamètre des roues en cm * Pi
-  float arc; // Pi*d*angle/360   //d= 2*19.05 cm
-  float arcUnitaire =  PI * 18.7 * 2 / 360;//arc pour un degré de rotation
-  float vitesse = 0.3; // vitesse des moteurs
-
-
-  ENCODER_ReadReset(0);
-  ENCODER_ReadReset(1);
-
-
-  arc = arcUnitaire*91;
-  nbPulse = arc/circonference * 3200;
-Serial.println(nbPulse);
-  MOTOR_SetSpeed(0,vitesse);
-  MOTOR_SetSpeed(1,-vitesse);
-
-  
-
-  while(compteurPulseG < nbPulse /*|| compteurPulseD > -nbPulse){
-    delay(50);
-    compteurPulseD = ENCODER_Read(1);
-    compteurPulseG = ENCODER_Read(0);
-   // Serial.println(compteurPulseD);
-   // Serial.print(nbPulse);
-  // Serial.println(compteurPulseG);
-    if (compteurPulseG>=nbPulse){
-      MOTOR_SetSpeed(0,0);
-      MOTOR_SetSpeed(1,0);
-    }
-    //if (compteurPulseD<=-nbPulse){
-      //MOTOR_SetSpeed(1,0);
-    //}
-  }*/
 }
