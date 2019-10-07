@@ -39,10 +39,10 @@ void setup()
   Tourner(-90);
   delay(200);
 
-  Avancer(71);
+  Avancer(70);
   delay(200);
 
-  Tourner(94);
+  Tourner(90);
   delay(200);
 
   Avancer(75);
@@ -51,7 +51,7 @@ void setup()
   Tourner(45); //45
   delay(200);
 
-  Avancer(180);
+  Avancer(175);
   delay(200);
   
   Tourner(-90);
@@ -83,7 +83,7 @@ void setup()
   Tourner(90);
   delay(200);
 
-  Avancer(180);
+  Avancer(175);
   delay(200);
 
   Tourner(-45);
@@ -106,6 +106,7 @@ void setup()
 
   UTurn();
   UTurn();
+  delay(2000);
   UTurn();
   UTurn();
 
@@ -212,7 +213,7 @@ void Tourner(int32_t angle){
   int32_t nbPulse=0,compteurPulse=0; // 
   float circonference = 23.938936; //Diamètre des roues en cm * Pi
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
-  float arcUnitaire =  PI * 18.7 * 2 / 360;//arc pour un degré de rotation
+  float arcUnitaire =  PI * 18.3 * 2 / 360;//arc pour un degré de rotation
   float vitesse = 0.25; // vitesse des moteurs
 
 
@@ -249,15 +250,15 @@ void UTurn(){
   int32_t nbPulse=0,compteurPulseG= 0, compteurPulseD=0; // 
   float circonference = 23.938936; //Diamètre des roues en cm * Pi
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
-  float arcUnitaire =  PI * 18.7 * 2 / 360;//arc pour un degré de rotation
-  float vitesse = 0.3; // vitesse des moteurs
+  float arcUnitaire =  PI * 18.385 * 2 / 360;//arc pour un degré de rotation
+  float vitesse = 0.2; // vitesse des moteurs
 
 
   ENCODER_ReadReset(0);
   ENCODER_ReadReset(1);
 
 
-  arc = arcUnitaire*88;
+  arc = arcUnitaire*91;
   nbPulse = arc/circonference * 3200;
 Serial.println(nbPulse);
   MOTOR_SetSpeed(0,vitesse);
@@ -266,7 +267,7 @@ Serial.println(nbPulse);
   
 
   while(compteurPulseG < nbPulse || compteurPulseD > -nbPulse){
-    delay(50);
+    delay(15);
     compteurPulseD = ENCODER_Read(1);
     compteurPulseG = ENCODER_Read(0);
    // Serial.println(compteurPulseD);
