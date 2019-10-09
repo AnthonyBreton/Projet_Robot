@@ -19,6 +19,17 @@ float PID(int32_t nbPulseMaitre, int32_t nbPulseEsclave, float vEsclave, int nbI
 void setup() 
 {
   BoardInit();
+  delay(1000);
+/*
+  Tourner(-90);
+  delay(1000);
+  Tourner(90);
+  delay(1000);
+  Tourner(-180);
+  delay(1000);
+  Tourner(180);
+  delay(1000);
+*/
 
   Avancer(116);
   delay(100);
@@ -90,6 +101,7 @@ void setup()
   delay(100);
 
   UTurn();UTurn();UTurn();UTurn();UTurn();
+  
 }
 
 
@@ -105,11 +117,12 @@ void Avancer(float distance)
 {
     float vM=0.2;
     float vE=vM;
-    int compteur = 0; //nb de pulse lu depuis de le debut
+    int compteurM = 0, compteurE = 0; //nb de pulse lu depuis de le debut
     int32_t nbPulse = 0, nbPulseM = 0, nbPulseE = 0; //M=maitre, E=esclave
     float circonference = 23.938936; //Diamètre des roues en cm * Pi
     int erreurL = 0, erreurT=0; //erreurL=erreur local, erreurT=erreur total
-    float KP=0.0004 , KI=0.00002;//coefficiant pour erreurL et erreurT
+    float KP=0.0006 , KI=0.00002;//coefficiant pour erreurL et erreurT
+    //float KP=0.0004 , KI=0.00002; avant changement 2019/10/09
     //2019-10-02 avant changement: KP=0.0001, KI=0.00002
     //Trouver le nombre de pulse nécessaire pour une distance donnée en cm
     nbPulse = distance / circonference * 3200;
@@ -127,11 +140,11 @@ void Avancer(float distance)
       vE = vM;
       MOTOR_SetSpeed(0, vM);
       MOTOR_SetSpeed(1, vE);
-      delay(10);
+      delay(15);
     }
 
     //Permet de réduire la vitesse juste avant la fin pour éviter un arrêt brusque
-    while (compteur < (nbPulse-3200))
+    while (compteurM < (nbPulse-3200))
     {
         delay(100);
         nbPulseM = ENCODER_Read(0);
@@ -139,10 +152,11 @@ void Avancer(float distance)
 
         //on trouve les erreur L et T
         erreurL= nbPulseM-nbPulseE;
-        compteur+= nbPulseM; //SI sa fonctionne pas, on fait la moyenne des 2 pulse (M et E)
-        erreurT += erreurL;
+        compteurM+= nbPulseM; 
+        compteurE+= nbPulseE; 
+        erreurT =compteurM-compteurE;
         //calcul de la nouvelle vitesse pour vE
-        vE= vE + erreurL * KP + (erreurT) * KI;
+        vE= vE + erreurL * KP + erreurT * KI;
         MOTOR_SetSpeed(1,vE);
 
         //On reset les lectures des pulses
@@ -151,13 +165,16 @@ void Avancer(float distance)
     }
 
     //Réduit la vitesse des moteurs
-    vM=0.25;
-    vE=vM;
-    MOTOR_SetSpeed(0, vM);
-    MOTOR_SetSpeed(1, vE);
+    while(vM >= 0.2){
+      vM -= 0.01;
+      vE = vM;
+      MOTOR_SetSpeed(0, vM);
+      MOTOR_SetSpeed(1, vE);
+      delay(10);
+    }
 
     //Détermine quand le robot à atteint la distance pour l'arrêter
-    while (compteur < nbPulse)
+    while (compteurM < nbPulse)
     {
         delay(100);
         nbPulseM = ENCODER_Read(0);
@@ -165,8 +182,9 @@ void Avancer(float distance)
 
         //on trouve les erreur L et T
         erreurL= nbPulseM-nbPulseE;
-        compteur+= nbPulseM; //SI sa fonctionne pas, on fait la moyenne des 2 pulse (M et E)
-        erreurT += erreurL;
+        compteurM+= nbPulseM; //SI sa fonctionne pas, on fait la moyenne des 2 pulse (M et E)
+        compteurE+= nbPulseE;
+        erreurT = compteurM - compteurE;
 
         //calcul de la nouvelle vitesse pour vE
         vE= vE + erreurL * KP + (erreurT) * KI;
@@ -250,7 +268,7 @@ void Tourner(int32_t angle){
   int32_t nbPulse=0,compteurPulse=0; // 
   float circonference = 23.938936; //Diamètre des roues en cm * Pi
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
-  float arcUnitaire =  PI * 18.6 * 2 / 360;//arc pour un degré de rotation
+  float arcUnitaire =  PI * 18.75 * 2 / 360;//arc pour un degré de rotation
   float vitesse = 0.3; // vitesse des moteurs
 
 
