@@ -20,90 +20,92 @@ void setup()
   BoardInit();
   Serial.begin(9600);
 
-  Avancer(115);
+  Avancer(115); //1
   delay(200);
  
-  Tourner(-87);
+  Tourner(-87); //2
   delay(200);
   
-  Avancer(81);
+  Avancer(81); //3
   delay(200);
  
-  Tourner(90);
+  Tourner(90); //4
   delay(200);
 
-  Avancer2(26);
+  Avancer(26); //5
   delay(200);
 
-  Tourner(90);
+  Tourner(90); //6
   delay(200);
 
-  Avancer(30);
+  Avancer(36); //7
   delay(200);
 
-  Tourner(-87);
+  Tourner(-87); //8
   delay(200);
 
-  Avancer(191);
+  Avancer(191); //9
   delay(200);
 
-  Tourner(90);
+  Tourner(87); //10
   delay(200);
 
-  Avancer2(15);//11
+  Avancer(26);//11
   delay(200);
 
-  Tourner(-87);
+  Tourner(-87); //12
   delay(200);
 
-  Avancer(120);
+  Avancer(120); //13
   delay(200);
 
   UTurn();
   delay(500);
-  
-  Avancer(120);
+
+  Avancer(500);
+  /*
+  Avancer(120); //13b
   delay(200);
 
-  Tourner(90);
+  Tourner(90); //12b
   delay(200);
 
-  Avancer2(15);//11 b
+  Avancer2(26);//11b
   delay(200);
 
-  Tourner(-87);
+  Tourner(-87);//10b
   delay(200);
 
-  Avancer(191);
+  Avancer(191); //9b
   delay(200);
 
-  Tourner(90);
+  Tourner(90);//8b
   delay(200);
 
-  Avancer(30);
+  Avancer(30);//7b
   delay(200);
 
-  Tourner(-87);
+  Tourner(-87);//6b
   delay(200);
 
-  Avancer2(26);
+  Avancer2(30);//5b
   delay(200);
 
-  Tourner(-87);
+  Tourner(-87);//4b
   delay(200);
 
-  Avancer(81);
+  Avancer(81);//3b
   delay(200);
 
-  Tourner(90);
+  Tourner(90);//2
   delay(200);
 
-  Avancer(115);
+  Avancer(115);//1
 
   UTurn();
   UTurn();
   
- 
+ */
 }
 
 
