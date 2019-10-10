@@ -24,15 +24,21 @@ void setup()
   //Tourner(-360);
   //Serial.begin(9600);
 /*
-  Tourner(180);
+  Tourner(-90);
+  delay(1000);
+  Tourner(90);
+  delay(1000);
+  Tourner(-180);
   delay(1000);
   Tourner(180);
   delay(1000);
-  Tourner(180);
-  delay(1000);
-  Tourner(180);
-  delay(1000);
-  */
+*/
+
+//Avancer(300);
+//delay(100);
+ 
+
+ 
   Avancer(120);
   delay(200);
 
@@ -48,7 +54,7 @@ void setup()
   Avancer(75);
   delay(200);
 
-  Tourner(45); //45
+  Tourner(41); //45
   delay(200);
 
   Avancer(175);
@@ -57,11 +63,10 @@ void setup()
   Tourner(-90);
   delay(200);
 
-  Avancer(40);
+  Avancer(45);
   delay(200);
 
   Tourner(45);
-  
   delay(200);
 
   Avancer(100);
@@ -78,7 +83,7 @@ void setup()
   Tourner(-45);
   delay(200);
 
-  Avancer(40);
+  Avancer(45);
   delay(200);
 
   Tourner(90);
@@ -94,16 +99,16 @@ void setup()
   Avancer(75);
   delay(200);
 
-  Tourner(-90);
+  Tourner(-87);
   delay(200);
 
   Avancer(71);
   delay(200);
 
-  Tourner(90);
+  Tourner(92);
   delay(200);
 
-  Avancer(120);
+  Avancer(130);
   delay(200);
 
   UTurn();
@@ -226,7 +231,7 @@ void Tourner(int32_t angle){
   int32_t nbPulse=0,compteurPulse=0; // 
   float circonference = 23.938936; //Diamètre des roues en cm * Pi
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
-  float arcUnitaire =  PI * 18.3 * 2 / 360;//arc pour un degré de rotation
+  float arcUnitaire =  PI * 18.75 * 2 / 360;//arc pour un degré de rotation
   float vitesse = 0.25; // vitesse des moteurs
 
 
