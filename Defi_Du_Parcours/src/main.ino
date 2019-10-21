@@ -10,19 +10,21 @@ Date: Derniere date de modification
 #include <librobus.h>
 #define PI 3.14159265359
 
-
 void Avancer(float distance);
 void Tourner(int32_t angle);
-float PID(int pulseM, int pulseE, float vitesseM);
+float PID(int pulseM, int pulseE, float vitesseM, long pulseT, int totalE);
 
 void setup() 
 {
   BoardInit();
   Serial.begin(9600);
 
-  Avancer(100);
-}
+  Avancer(500);
 
+  /*Tourner(360);
+  delay(1000);
+  Tourner(-360);*/
+}
 
 
 void loop() 
@@ -31,12 +33,14 @@ void loop()
   
 }
 
-float PID(int pulseM, int pulseE, float vitesseM)
+float PID(int pulseM, int pulseE, float vitesseM, long pulseT, int totalE)
 {
   int erreurP = 0;
-  float kP = 0.001;
+  int erreurI = 0;
+  float kP = 0.001, kI = 0.002;
 
   erreurP = pulseM - pulseE;
+  erreurI = pulseT - totalE;
 
   Serial.print(pulseM);
   Serial.print("    ");
@@ -44,16 +48,16 @@ float PID(int pulseM, int pulseE, float vitesseM)
   Serial.print("    ");
   Serial.println(erreurP);
 
-  return (vitesseM + (erreurP * kP) );
+  return (vitesseM + (erreurP * kP) + (erreurI * kI) );
 }
-
 
 void Avancer(float distance)
 {
-  int pulseCalculer = 0, pulseM = 0, pulseE = 0, pulseT = 0;
+  int pulseCalculer = 0, pulseM = 0, pulseE = 0,  totalE = 0;
   float vitesseM = 0, vitesseE = 0;
   float circonference = 23.938936;//cm
-  
+  long pulseT = 0;
+   
   
   ENCODER_ReadReset(1);
   ENCODER_ReadReset(0);
@@ -74,17 +78,17 @@ void Avancer(float distance)
         //Serial.println(i);
         vitesseM = i;
 
-        pulseM = ENCODER_Read(1);
-        pulseE = ENCODER_Read(0);
+        pulseM = ENCODER_ReadReset(1);
+        pulseE = ENCODER_ReadReset(0);
+
+        totalE += pulseE;
 
         pulseT += pulseM;
-
-        vitesseE = PID(pulseM, pulseE, vitesseM);
+        Serial.println(pulseT);
+        vitesseE = PID(pulseM, pulseE, vitesseM, pulseT, totalE);
         
         MOTOR_SetSpeed(1, vitesseM);
         MOTOR_SetSpeed(0, vitesseE);
-
-        
 
         //Cas ou la distance a parcourir est plus petite que la distance d'accélération
         if (pulseT >= pulseCalculer)
@@ -97,51 +101,48 @@ void Avancer(float distance)
           break;
         }
 
-        ENCODER_ReadReset(1);
-        ENCODER_ReadReset(0);
         delay(20); //a checker la valeur
       }
       //Fin du code pour accélérer
     }
     else
     {
-      pulseM = ENCODER_Read(1);
-      pulseE = ENCODER_Read(0);
+      delay(20);
+      
+      pulseM = ENCODER_ReadReset(1);
+      pulseE = ENCODER_ReadReset(0);
 
+      totalE += pulseE;
       pulseT += pulseM;
-      //Serial.println(pulseT);
+      Serial.println(pulseT);
 
       //Code pour ralentir
-      if (pulseT >= pulseCalculer - 3200)
+      if (pulseT >= pulseCalculer - 3200 && pulseCalculer > 5500)
       {
         for (float i = vitesseM; i >= 0.20; i -= 0.01)
         {
           vitesseM = i;
-          pulseM = ENCODER_Read(1);
-          pulseE = ENCODER_Read(0);
+          pulseM = ENCODER_ReadReset(1);
+          pulseE = ENCODER_ReadReset(0);
 
+          totalE += pulseE;
           pulseT += pulseM;
-          //Serial.println(pulseT);
-          vitesseE = PID(pulseM, pulseE, vitesseM);
+          Serial.println(pulseT);
+          vitesseE = PID(pulseM, pulseE, vitesseM, pulseT, totalE);
           MOTOR_SetSpeed(1, vitesseM);
           MOTOR_SetSpeed(0, vitesseE);
 
-          ENCODER_ReadReset(1);
-          ENCODER_ReadReset(0);
           delay(20); //a checker la valeur
         }
       }
       //Fin du code pour ralentir
 
       //Code lorsque le robot roule a vitesse constante
+      Serial.println("Allo");
 
-      vitesseE = PID(pulseM, pulseE, vitesseM);
 
-
-      ENCODER_ReadReset(1);
-      ENCODER_ReadReset(0);
-      delay(10);
-      
+      vitesseE = PID(pulseM, pulseE, vitesseM, pulseT, totalE);
+      MOTOR_SetSpeed(0, vitesseE);
     }
   }
   MOTOR_SetSpeed(1, 0);
@@ -151,6 +152,88 @@ void Avancer(float distance)
 
 }
 
+
+void Tourner(int32_t angle)
+{
+  int32_t nbPulse=0,compteurPulseG= 0, compteurPulseD=0, pulseM = 0, pulseE = 0; // 
+  float circonference = 23.938936; //Diamètre des roues en cm * Pi
+  float arc; // Pi*d*angle/360   //d= 2*19.05 cm
+  float arcUnitaire =  PI * 18.385 * 2 / 360;//arc pour un degré de rotation
+  float vitesseG = 0.25, vitesseD = 0.25; // vitesse des moteurs
+
+  ENCODER_ReadReset(0);
+  ENCODER_ReadReset(1);
+
+  arc = arcUnitaire * (angle / 2);
+  nbPulse = arc/circonference * 3200;
+  Serial.println(nbPulse);
+  if (angle > 0)
+  {
+    MOTOR_SetSpeed(0,vitesseG);
+    MOTOR_SetSpeed(1,-vitesseD);
+
+    while(compteurPulseD > -nbPulse){
+      delay(25);
+      pulseM = ENCODER_Read(1);
+      pulseE = ENCODER_Read(0);
+
+      compteurPulseD += pulseM;
+      compteurPulseG += pulseE;
+
+      vitesseG = PID(pulseM, pulseE, vitesseD, compteurPulseD, compteurPulseG);
+
+      MOTOR_SetSpeed(0, vitesseG);
+
+      Serial.print(compteurPulseD);
+      Serial.print("    ");
+      Serial.print(nbPulse);
+      Serial.print("    ");
+      Serial.println(compteurPulseG);
+
+      if (compteurPulseD<=-nbPulse){
+        MOTOR_SetSpeed(1,0);
+        MOTOR_SetSpeed(0,0);
+      }
+
+      ENCODER_ReadReset(0);
+      ENCODER_ReadReset(1);
+    }
+  }
+  else
+  {
+    Serial.println("Allo");
+    MOTOR_SetSpeed(0,-vitesseG);
+    MOTOR_SetSpeed(1,vitesseD);
+
+    while(compteurPulseD < -nbPulse){
+      delay(25);
+      pulseM = ENCODER_Read(1);
+      pulseE = ENCODER_Read(0);
+
+      compteurPulseD += pulseM;
+      compteurPulseG += pulseE;
+
+      vitesseG = PID(pulseM, pulseE, vitesseD, compteurPulseD, compteurPulseG);
+
+      MOTOR_SetSpeed(0, -vitesseG);
+
+      Serial.print(compteurPulseD);
+      Serial.print("    ");
+      Serial.print(nbPulse);
+      Serial.print("    ");
+      Serial.println(compteurPulseG);
+
+      if (compteurPulseD >= -nbPulse){
+        MOTOR_SetSpeed(1,0);
+        MOTOR_SetSpeed(0,0);
+      }
+
+      ENCODER_ReadReset(0);
+      ENCODER_ReadReset(1);
+    }
+  }
+  
+}
 
 
 /*
@@ -343,14 +426,12 @@ void Avancer(float distance)
     MOTOR_SetSpeed(1, vE);
 }
 
-
 void Tourner(int32_t angle){
   int32_t nbPulse=0,compteurPulse=0; // 
   float circonference = 23.938936; //Diamètre des roues en cm * Pi
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
   float arcUnitaire =  PI * 18.75 * 2 / 360;//arc pour un degré de rotation
   float vitesse = 0.25; // vitesse des moteurs
-
 
   ENCODER_ReadReset(0);
   ENCODER_ReadReset(1);
@@ -388,10 +469,8 @@ void UTurn(){
   float arcUnitaire =  PI * 18.385 * 2 / 360;//arc pour un degré de rotation
   float vitesse = 0.2; // vitesse des moteurs
 
-
   ENCODER_ReadReset(0);
   ENCODER_ReadReset(1);
-
 
   arc = arcUnitaire*91;
   nbPulse = arc/circonference * 3200;
@@ -417,3 +496,4 @@ Serial.println(nbPulse);
     }
   }
 }*/
+
