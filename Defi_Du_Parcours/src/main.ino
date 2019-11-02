@@ -12,7 +12,7 @@ Date: Derniere date de modification
 
 void Avancer(float distance);
 void Tourner(int32_t angle);
-float PID(int pulseM, int pulseE, float vitesseM, long pulseT, int totalE);
+float PID(int pulseM, int pulseE, float vitesseM, long pulseT, long totalE);
 
 void setup() 
 {
@@ -33,15 +33,25 @@ void loop()
   
 }
 
-float PID(int pulseM, int pulseE, float vitesseM, long pulseT, int totalE)
+/*
+* pulseM : nb de pulses à chaque lectures du moteur maître (En ce moment le droit)
+* pulseE : nb de pulses à chaque lectures du moteur esclave (En ce moment le gauche)
+* vitesseM : La vitesse initiale du moteur maître (En ce moment le droit)
+* pulseT : Le nombre de pulses depuis le début du moteur maître (En ce moment le droit)
+* totalE : Le nombre de pulses depuis le début du moteur esclave (En ce moment le gauche)
+*/
+float PID(int pulseM, int pulseE, float vitesseM, long pulseT, long totalE)
 {
   int erreurP = 0;
   int erreurI = 0;
+  // Robot 30A    kP : ????   kI : ????
+  // Robot 30B    kP : ????   kI : ????
   float kP = 0.001, kI = 0.002;
 
   erreurP = pulseM - pulseE;
   erreurI = pulseT - totalE;
 
+  //Aide à déboguer
   Serial.print(pulseM);
   Serial.print("    ");
   Serial.print(pulseE);
@@ -51,17 +61,20 @@ float PID(int pulseM, int pulseE, float vitesseM, long pulseT, int totalE)
   return (vitesseM + (erreurP * kP) + (erreurI * kI) );
 }
 
+
+
 void Avancer(float distance)
 {
-  int pulseCalculer = 0, pulseM = 0, pulseE = 0,  totalE = 0;
+  int pulseM = 0, pulseE = 0;
   float vitesseM = 0, vitesseE = 0;
   float circonference = 23.938936;//cm
-  long pulseT = 0;
+  long pulseT = 0, pulseCalculer = 0,  totalE = 0;
    
   
   ENCODER_ReadReset(1);
   ENCODER_ReadReset(0);
 
+  //Débogage
   Serial.println("1");
 
   pulseCalculer = distance/circonference*3200;
@@ -82,9 +95,10 @@ void Avancer(float distance)
         pulseE = ENCODER_ReadReset(0);
 
         totalE += pulseE;
-
         pulseT += pulseM;
+
         Serial.println(pulseT);
+
         vitesseE = PID(pulseM, pulseE, vitesseM, pulseT, totalE);
         
         MOTOR_SetSpeed(1, vitesseM);
@@ -155,7 +169,8 @@ void Avancer(float distance)
 
 void Tourner(int32_t angle)
 {
-  int32_t nbPulse=0,compteurPulseG= 0, compteurPulseD=0, pulseM = 0, pulseE = 0; // 
+  int32_t nbPulse = 0, pulseM = 0, pulseE = 0;
+  long compteurPulseG = 0, compteurPulseD = 0;
   float circonference = 23.938936; //Diamètre des roues en cm * Pi
   float arc; // Pi*d*angle/360   //d= 2*19.05 cm
   float arcUnitaire =  PI * 18.385 * 2 / 360;//arc pour un degré de rotation
@@ -167,6 +182,8 @@ void Tourner(int32_t angle)
   arc = arcUnitaire * (angle / 2);
   nbPulse = arc/circonference * 3200;
   Serial.println(nbPulse);
+  
+
   if (angle > 0)
   {
     MOTOR_SetSpeed(0,vitesseG);
@@ -174,8 +191,8 @@ void Tourner(int32_t angle)
 
     while(compteurPulseD > -nbPulse){
       delay(25);
-      pulseM = ENCODER_Read(1);
-      pulseE = ENCODER_Read(0);
+      pulseM = ENCODER_ReadReset(1);
+      pulseE = ENCODER_ReadReset(0);
 
       compteurPulseD += pulseM;
       compteurPulseG += pulseE;
@@ -190,13 +207,11 @@ void Tourner(int32_t angle)
       Serial.print("    ");
       Serial.println(compteurPulseG);
 
+      //On pourrait pt juste attendre qu'il sorte du while puis mettre les vitesses à 0
       if (compteurPulseD<=-nbPulse){
         MOTOR_SetSpeed(1,0);
         MOTOR_SetSpeed(0,0);
       }
-
-      ENCODER_ReadReset(0);
-      ENCODER_ReadReset(1);
     }
   }
   else
@@ -207,8 +222,8 @@ void Tourner(int32_t angle)
 
     while(compteurPulseD < -nbPulse){
       delay(25);
-      pulseM = ENCODER_Read(1);
-      pulseE = ENCODER_Read(0);
+      pulseM = ENCODER_ReadReset(1);
+      pulseE = ENCODER_ReadReset(0);
 
       compteurPulseD += pulseM;
       compteurPulseG += pulseE;
@@ -223,16 +238,15 @@ void Tourner(int32_t angle)
       Serial.print("    ");
       Serial.println(compteurPulseG);
 
+
+      //On pourrait pt juste attendre qu'il sorte du while puis mettre les vitesses à 0
       if (compteurPulseD >= -nbPulse){
         MOTOR_SetSpeed(1,0);
         MOTOR_SetSpeed(0,0);
       }
-
-      ENCODER_ReadReset(0);
-      ENCODER_ReadReset(1);
     }
   }
-  
+  delay(100);//Pour éviter de l'écrire après chaque fonctions
 }
 
 
