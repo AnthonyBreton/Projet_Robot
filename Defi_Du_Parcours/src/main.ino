@@ -19,11 +19,11 @@ void setup()
   BoardInit();
   Serial.begin(9600);
 
-  Avancer(500);
+  //Avancer(30);
 
-  /*Tourner(360);
-  delay(1000);
-  Tourner(-360);*/
+  Tourner(90);
+  delay(2000);
+  Tourner(-90);
 }
 
 
@@ -44,7 +44,7 @@ float PID(int pulseM, int pulseE, float vitesseM, long pulseT, long totalE)
 {
   int erreurP = 0;
   int erreurI = 0;
-  // Robot 30A    kP : ????   kI : ????
+  // Robot 30A    kP : .001   kI : .002
   // Robot 30B    kP : ????   kI : ????
   float kP = 0.001, kI = 0.002;
 
@@ -197,7 +197,7 @@ void Tourner(int32_t angle)
       compteurPulseD += pulseM;
       compteurPulseG += pulseE;
 
-      vitesseG = PID(pulseM, pulseE, vitesseD, compteurPulseD, compteurPulseG);
+      vitesseG = PID(pulseM, pulseE, vitesseD, -compteurPulseD, compteurPulseG); //le negative est la parce que les roues ne tournent pas dans la même direction, ce que le pid est normalement fait pour
 
       MOTOR_SetSpeed(0, vitesseG);
 
@@ -208,7 +208,7 @@ void Tourner(int32_t angle)
       Serial.println(compteurPulseG);
 
       //On pourrait pt juste attendre qu'il sorte du while puis mettre les vitesses à 0
-      if (compteurPulseD<=-nbPulse){
+      if (compteurPulseD <= -nbPulse){
         MOTOR_SetSpeed(1,0);
         MOTOR_SetSpeed(0,0);
       }
@@ -217,8 +217,9 @@ void Tourner(int32_t angle)
   else
   {
     Serial.println("Allo");
-    MOTOR_SetSpeed(0,-vitesseG);
     MOTOR_SetSpeed(1,vitesseD);
+    MOTOR_SetSpeed(0,vitesseG);
+    
 
     while(compteurPulseD < -nbPulse){
       delay(25);
@@ -228,9 +229,9 @@ void Tourner(int32_t angle)
       compteurPulseD += pulseM;
       compteurPulseG += pulseE;
 
-      vitesseG = PID(pulseM, pulseE, vitesseD, compteurPulseD, compteurPulseG);
+      vitesseG = PID(pulseM, pulseE, vitesseD, -compteurPulseD, compteurPulseG);
 
-      MOTOR_SetSpeed(0, -vitesseG);
+      MOTOR_SetSpeed(0, vitesseG);
 
       Serial.print(compteurPulseD);
       Serial.print("    ");
@@ -259,7 +260,7 @@ void Avancer2(float distance)
     int32_t nbPulse = 0, nbPulseM = 0, nbPulseE = 0; //M=maitre, E=esclave
     float circonference = 23.938936; //Diamètre des roues en cm * Pi
     int erreurL = 0, erreurT=450; //erreurL=erreur local, erreurT=erreur total
-    float KP=0.0007 , KI=0.00020;//coefficiant pour erreurL et erreurT
+    float KP=0.0007, KI=0.00020;//coefficiant pour erreurL et erreurT
     //2019-10-09 avant changement: KP=0.0001, KI=0.00002
     //Trouver le nombre de pulse nécessaire pour une distance donnée en cm
     nbPulse = distance / circonference * 3200;
