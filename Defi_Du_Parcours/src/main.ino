@@ -10,7 +10,7 @@ Date: Derniere date de modification
 #include <librobus.h>
 #define PI 3.14159265359
 
-void Avancer(float distance);
+void Avancer(float v);
 void Tourner(int32_t angle);
 float PID(int pulseM, int pulseE, float vitesseM, long pulseT, long totalE);
 
@@ -19,11 +19,8 @@ void setup()
   BoardInit();
   Serial.begin(9600);
 
-  //Avancer(200);
+  Avancer(-0.25);
 
-  //Tourner(90);
- // delay(2000);
-  Tourner(-90);
 }
 
 
@@ -61,9 +58,40 @@ float PID(int pulseM, int pulseE, float vitesseM, long pulseT, long totalE)
   return (vitesseM + (erreurP * kP) + (erreurI * kI) );
 }
 
+void Avancer(float v)
+{
+int32_t nbPulse = 0, pulseM = 0, pulseE = 0;
+  long compteurPulseG = 0, compteurPulseD = 0;
+  //float circonference = 23.938936; //Diamètre des roues en cm * Pi
+  //float arc; // Pi*d*angle/360   //d= 2*19.05 cm
+  ////float arcUnitaire =  PI * 18.385 * 2 / 360;//arc pour un degré de rotation
+  float vitesseG = 0.25, vitesseD = 0.25; // vitesse des moteurs
+  int i=0;
+  ENCODER_ReadReset(0);
+  ENCODER_ReadReset(1);
+
+ MOTOR_SetSpeed(0,v);
+ MOTOR_SetSpeed(1,v);
+
+while(i=0)
+  {
+delay(25);
+      pulseM = ENCODER_ReadReset(1);
+      pulseE = ENCODER_ReadReset(0);
+
+      compteurPulseD += pulseM;
+      compteurPulseG += pulseE;
+
+      vitesseG = PID(pulseM, pulseE, vitesseD, compteurPulseD, compteurPulseG); //le negative est la parce que les roues ne tournent pas dans la même direction, ce que le pid est normalement fait pour
+
+      MOTOR_SetSpeed(0, vitesseG);
+}
 
 
-void Avancer(float distance)
+
+}
+
+/*void Avancer(float distance)
 {
   int pulseM = 0, pulseE = 0;
   float vitesseM = 0, vitesseE = 0;
@@ -164,7 +192,7 @@ void Avancer(float distance)
 
   delay(100);//Pour éviter de l'écrire après chaque fonctions
 
-}
+}*/
 
 
 void Tourner(int32_t angle)
