@@ -45,7 +45,7 @@ float PID(int pulseM, int pulseE, float vitesseM, long pulseT, long totalE)
   int erreurP = 0;
   int erreurI = 0;
   // Robot 30A    kP : .001   kI : .002
-  // Robot 30B    kP : ????   kI : ????
+  // Robot 30B    kP : .002   kI : .002
   float kP = 0.002, kI = 0.002;
 
   erreurP = pulseM - pulseE;
