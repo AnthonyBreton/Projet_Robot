@@ -19,11 +19,11 @@ void setup()
   BoardInit();
   Serial.begin(9600);
 
-  //Avancer(30);
+  Avancer(200);
 
-  Tourner(90);
+  /*Tourner(90);
   delay(2000);
-  Tourner(-90);
+  Tourner(-90);*/
 }
 
 
@@ -46,7 +46,7 @@ float PID(int pulseM, int pulseE, float vitesseM, long pulseT, long totalE)
   int erreurI = 0;
   // Robot 30A    kP : .001   kI : .002
   // Robot 30B    kP : ????   kI : ????
-  float kP = 0.001, kI = 0.002;
+  float kP = 0.002, kI = 0.002;
 
   erreurP = pulseM - pulseE;
   erreurI = pulseT - totalE;
