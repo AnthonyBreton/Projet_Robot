@@ -19,11 +19,11 @@ void setup()
   BoardInit();
   Serial.begin(9600);
 
-  Avancer(200);
+  //Avancer(200);
 
-  /*Tourner(90);
-  delay(2000);
-  Tourner(-90);*/
+  //Tourner(90);
+ // delay(2000);
+  Tourner(-90);
 }
 
 
@@ -218,20 +218,20 @@ void Tourner(int32_t angle)
   {
     Serial.println("Allo");
     MOTOR_SetSpeed(1,vitesseD);
-    MOTOR_SetSpeed(0,vitesseG);
+    MOTOR_SetSpeed(0,-vitesseG);
     
 
-    while(compteurPulseD < -nbPulse){
+    while(compteurPulseG > nbPulse){
       delay(25);
-      pulseM = ENCODER_ReadReset(1);
-      pulseE = ENCODER_ReadReset(0);
+      pulseM = ENCODER_ReadReset(0);
+      pulseE = ENCODER_ReadReset(1);
 
-      compteurPulseD += pulseM;
-      compteurPulseG += pulseE;
+      compteurPulseG += pulseM;
+      compteurPulseD += pulseE;
 
-      vitesseG = PID(pulseM, pulseE, vitesseD, -compteurPulseD, compteurPulseG);
+      vitesseD = PID(pulseM, pulseE, vitesseG, -compteurPulseD, compteurPulseG);
 
-      MOTOR_SetSpeed(0, vitesseG);
+      MOTOR_SetSpeed(1, vitesseD);
 
       Serial.print(compteurPulseD);
       Serial.print("    ");
@@ -246,7 +246,40 @@ void Tourner(int32_t angle)
         MOTOR_SetSpeed(0,0);
       }
     }
+    MOTOR_SetSpeed(1,0);
+        MOTOR_SetSpeed(0,0);
   }
+  /*else
+  {
+    MOTOR_SetSpeed(0,-0.25);
+    MOTOR_SetSpeed(1,0.25);
+
+    while(-compteurPulseG > nbPulse){
+      delay(25);
+      pulseM = ENCODER_ReadReset(0);
+      pulseE = ENCODER_ReadReset(1);
+
+      compteurPulseG += pulseM;
+      compteurPulseD += pulseE;
+
+      vitesseD = PID(pulseE, pulseM, vitesseG, -compteurPulseG, compteurPulseD); //le negative est la parce que les roues ne tournent pas dans la même direction, ce que le pid est normalement fait pour
+
+      MOTOR_SetSpeed(1, vitesseD);
+
+      Serial.print(compteurPulseD);
+      Serial.print("    ");
+      Serial.print(nbPulse);
+      Serial.print("    ");
+      Serial.println(compteurPulseG);
+
+      //On pourrait pt juste attendre qu'il sorte du while puis mettre les vitesses à 0
+      if (compteurPulseG <= -nbPulse){
+        MOTOR_SetSpeed(1,0);
+        MOTOR_SetSpeed(0,0);
+      }
+    }
+  }*/
+  
   delay(100);//Pour éviter de l'écrire après chaque fonctions
 }
 
